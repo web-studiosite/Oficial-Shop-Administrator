@@ -1,0 +1,1714 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shop Administration - ERP Profissional</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen" class="login-screen">
+      <div class="login-bg"></div>
+      <div class="login-overlay"></div>
+      <div class="login-container">
+        <div class="login-logo">
+          <i class="fas fa-store"></i>
+          <h1>Shop Administration</h1>
+          <p>ERP Profissional Integrado</p>
+        </div>
+        <div class="login-form">
+          <div class="form-group">
+            <label><i class="fas fa-envelope"></i> Email</label>
+            <input type="email" id="login-email" placeholder="seu@email.com" value="admin@shop.com">
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-lock"></i> Senha</label>
+            <input type="password" id="login-password" placeholder="******" value="admin123">
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-user-tag"></i> Perfil</label>
+            <select id="login-role">
+              <option value="admin">Administrador</option>
+              <option value="junior">Gestor Junior</option>
+              <option value="caixa">Operador de Caixa</option>
+            </select>
+          </div>
+          <button class="btn-login" onclick="app.login()">
+            <i class="fas fa-sign-in-alt"></i> Entrar no Sistema
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="main-app" class="main-app hidden">
+      <!-- SIDEBAR -->
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+          <i class="fas fa-store"></i>
+          <span>Shop Admin</span>
+          <button class="sidebar-toggle" onclick="app.toggleSidebar()">
+            <i class="fas fa-bars"></i>
+          </button>
+        </div>
+        <nav class="sidebar-nav">
+          <div class="nav-section">
+            <span class="nav-title">Principal</span>
+            <a href="#" class="nav-item active" data-page="dashboard" onclick="app.navigate('dashboard')">
+              <i class="fas fa-tachometer-alt"></i><span>Dashboard</span>
+            </a>
+            <a href="#" class="nav-item" data-page="vendas" onclick="app.navigate('vendas')">
+              <i class="fas fa-cash-register"></i><span>Vendas</span>
+            </a>
+          </div>
+          <div class="nav-section">
+            <span class="nav-title">Gestao de Produtos</span>
+            <a href="#" class="nav-item" data-page="produtos" onclick="app.navigate('produtos')">
+              <i class="fas fa-boxes"></i><span>Produtos</span>
+            </a>
+            <a href="#" class="nav-item" data-page="categorias" onclick="app.navigate('categorias')">
+              <i class="fas fa-tags"></i><span>Categorias</span>
+            </a>
+            <a href="#" class="nav-item" data-page="estoque" onclick="app.navigate('estoque')">
+              <i class="fas fa-warehouse"></i><span>Estoque</span>
+            </a>
+          </div>
+          <div class="nav-section">
+            <span class="nav-title">Operacoes</span>
+            <a href="#" class="nav-item" data-page="loja" onclick="app.navigate('loja')">
+              <i class="fas fa-store-alt"></i><span>Loja</span>
+            </a>
+            <a href="#" class="nav-item" data-page="armazem" onclick="app.navigate('armazem')">
+              <i class="fas fa-dolly"></i><span>Armazem</span>
+            </a>
+            <a href="#" class="nav-item" data-page="transferencias" onclick="app.navigate('transferencias')">
+              <i class="fas fa-exchange-alt"></i><span>Transferencias</span>
+            </a>
+          </div>
+          <div class="nav-section">
+            <span class="nav-title">Inventario</span>
+            <a href="#" class="nav-item" data-page="inventario" onclick="app.navigate('inventario')">
+              <i class="fas fa-clipboard-list"></i><span>Inventario</span>
+            </a>
+            <a href="#" class="nav-item" data-page="reconciliacao" onclick="app.navigate('reconciliacao')">
+              <i class="fas fa-balance-scale"></i><span>Reconciliacao</span>
+            </a>
+            <a href="#" class="nav-item" data-page="fechamento" onclick="app.navigate('fechamento')">
+              <i class="fas fa-calendar-check"></i><span>Fechamento</span>
+            </a>
+          </div>
+          <div class="nav-section admin-only">
+            <span class="nav-title">Combustivel</span>
+            <a href="#" class="nav-item" data-page="combustivel" onclick="app.navigate('combustivel')">
+              <i class="fas fa-gas-pump"></i><span>Combustivel</span>
+            </a>
+            <a href="#" class="nav-item" data-page="bombas" onclick="app.navigate('bombas')">
+              <i class="fas fa-oil-can"></i><span>Bombas</span>
+            </a>
+          </div>
+          <div class="nav-section admin-only">
+            <span class="nav-title">Financeiro</span>
+            <a href="#" class="nav-item" data-page="caixa" onclick="app.navigate('caixa')">
+              <i class="fas fa-coins"></i><span>Fluxo de Caixa</span>
+            </a>
+            <a href="#" class="nav-item" data-page="perdas" onclick="app.navigate('perdas')">
+              <i class="fas fa-exclamation-triangle"></i><span>Perdas</span>
+            </a>
+            <a href="#" class="nav-item" data-page="roubos" onclick="app.navigate('roubos')">
+              <i class="fas fa-user-secret"></i><span>Roubos</span>
+            </a>
+          </div>
+          <div class="nav-section admin-only">
+            <span class="nav-title">Inteligencia</span>
+            <a href="#" class="nav-item" data-page="relatorios" onclick="app.navigate('relatorios')">
+              <i class="fas fa-chart-bar"></i><span>Relatorios</span>
+            </a>
+            <a href="#" class="nav-item" data-page="importacao" onclick="app.navigate('importacao')">
+              <i class="fas fa-file-import"></i><span>Importacao</span>
+            </a>
+            <a href="#" class="nav-item" data-page="configuracoes" onclick="app.navigate('configuracoes')">
+              <i class="fas fa-cog"></i><span>Configuracoes</span>
+            </a>
+          </div>
+        </nav>
+      </aside>
+
+      <!-- CONTENT AREA -->
+      <div class="content-wrapper">
+        <!-- HEADER -->
+        <header class="header">
+          <div class="header-left">
+            <h2 id="page-title">Dashboard</h2>
+            <span class="breadcrumb" id="breadcrumb">Principal / Dashboard</span>
+          </div>
+          <div class="header-center">
+            <div class="status-indicators">
+              <span class="status-badge" id="supabase-status">
+                <i class="fas fa-circle"></i> Supabase
+              </span>
+              <span class="status-badge" id="sync-status">
+                <i class="fas fa-sync"></i> Sincronizado
+              </span>
+              <span class="status-badge offline hidden" id="offline-status">
+                <i class="fas fa-wifi"></i> Offline
+              </span>
+            </div>
+          </div>
+          <div class="header-right">
+            <button class="header-btn" onclick="app.reconciliarSistema()" title="Reconciliar Sistema">
+              <i class="fas fa-balance-scale"></i>
+            </button>
+            <button class="header-btn" onclick="app.toggleNotifications()" title="Notificacoes">
+              <i class="fas fa-bell"></i>
+              <span class="badge" id="notif-badge">0</span>
+            </button>
+            <div class="user-menu">
+              <div class="user-avatar" onclick="app.toggleUserMenu()">
+                <i class="fas fa-user"></i>
+                <span id="user-name">Admin</span>
+                <i class="fas fa-chevron-down"></i>
+              </div>
+              <div class="user-dropdown hidden" id="user-dropdown">
+                <a href="#" onclick="app.navigate('configuracoes')"><i class="fas fa-cog"></i> Configuracoes</a>
+                <a href="#" onclick="app.logout()"><i class="fas fa-sign-out-alt"></i> Sair</a>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content" id="main-content">
+
+          <!-- DASHBOARD PAGE -->
+          <div id="page-dashboard" class="page active">
+            <div class="dashboard-header">
+              <div class="dashboard-stats">
+                <div class="stat-card animated">
+                  <div class="stat-icon bg-blue"><i class="fas fa-cash-register"></i></div>
+                  <div class="stat-info">
+                    <span class="stat-label">Vendas Hoje</span>
+                    <span class="stat-value" id="dash-vendas">MT 0,00</span>
+                  </div>
+                </div>
+                <div class="stat-card animated">
+                  <div class="stat-icon bg-gold"><i class="fas fa-coins"></i></div>
+                  <div class="stat-info">
+                    <span class="stat-label">Caixa Atual</span>
+                    <span class="stat-value" id="dash-caixa">MT 0,00</span>
+                  </div>
+                </div>
+                <div class="stat-card animated">
+                  <div class="stat-icon bg-green"><i class="fas fa-gas-pump"></i></div>
+                  <div class="stat-info">
+                    <span class="stat-label">Combustivel</span>
+                    <span class="stat-value" id="dash-combustivel">MT 0,00</span>
+                  </div>
+                </div>
+                <div class="stat-card animated">
+                  <div class="stat-icon bg-orange"><i class="fas fa-exclamation-triangle"></i></div>
+                  <div class="stat-info">
+                    <span class="stat-label">Estoque Baixo</span>
+                    <span class="stat-value" id="dash-estoque-baixo">0</span>
+                  </div>
+                </div>
+                <div class="stat-card animated">
+                  <div class="stat-icon bg-red"><i class="fas fa-clipboard-list"></i></div>
+                  <div class="stat-info">
+                    <span class="stat-label">Inventario</span>
+                    <span class="stat-value" id="dash-inventario">0 itens</span>
+                  </div>
+                </div>
+                <div class="stat-card animated">
+                  <div class="stat-icon bg-purple"><i class="fas fa-exclamation-circle"></i></div>
+                  <div class="stat-info">
+                    <span class="stat-label">Perdas/Roubos</span>
+                    <span class="stat-value" id="dash-perdas">MT 0,00</span>
+                  </div>
+                </div>
+                <div class="stat-card animated">
+                  <div class="stat-icon bg-teal"><i class="fas fa-balance-scale"></i></div>
+                  <div class="stat-info">
+                    <span class="stat-label">Reconciliacoes</span>
+                    <span class="stat-value" id="dash-reconciliacoes">0</span>
+                  </div>
+                </div>
+                <div class="stat-card animated">
+                  <div class="stat-icon bg-indigo"><i class="fas fa-chart-line"></i></div>
+                  <div class="stat-info">
+                    <span class="stat-label">Lucro Total</span>
+                    <span class="stat-value" id="dash-lucro">MT 0,00</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="dashboard-charts">
+              <div class="chart-card">
+                <div class="chart-header">
+                  <h3><i class="fas fa-chart-line"></i> Vendas dos Ultimos 7 Dias</h3>
+                </div>
+                <canvas id="chart-vendas-semanal"></canvas>
+              </div>
+              <div class="chart-card">
+                <div class="chart-header">
+                  <h3><i class="fas fa-chart-pie"></i> Vendas por Categoria</h3>
+                </div>
+                <canvas id="chart-categorias"></canvas>
+              </div>
+            </div>
+
+            <div class="dashboard-tables">
+              <div class="table-card">
+                <div class="table-header">
+                  <h3><i class="fas fa-exclamation-triangle"></i> Alertas de Estoque Baixo</h3>
+                  <button class="btn-text" onclick="app.navigate('estoque')">Ver Todos</button>
+                </div>
+                <div class="table-responsive">
+                  <table class="data-table" id="dash-alertas-table">
+                    <thead>
+                      <tr><th>Produto</th><th>Codigo</th><th>Qtd</th><th>Min</th><th>Status</th></tr>
+                    </thead>
+                    <tbody id="dash-alertas-body">
+                      <tr><td colspan="5" class="text-center">Nenhum alerta</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="table-card">
+                <div class="table-header">
+                  <h3><i class="fas fa-clock"></i> Ultimas Movimentacoes</h3>
+                  <button class="btn-text" onclick="app.navigate('estoque')">Ver Todas</button>
+                </div>
+                <div class="table-responsive">
+                  <table class="data-table" id="dash-movimentacoes-table">
+                    <thead>
+                      <tr><th>Data</th><th>Tipo</th><th>Produto</th><th>Qtd</th><th>Usuario</th></tr>
+                    </thead>
+                    <tbody id="dash-movimentacoes-body">
+                      <tr><td colspan="5" class="text-center">Nenhuma movimentacao</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PRODUTOS PAGE -->
+          <div id="page-produtos" class="page">
+            <div class="page-actions">
+              <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="prod-search" placeholder="Pesquisar produtos..." oninput="app.filtrarProdutos()">
+              </div>
+              <div class="action-buttons">
+                <button class="btn btn-secondary" onclick="app.openModal('modal-import-produtos')">
+                  <i class="fas fa-file-import"></i> Importar
+                </button>
+                <button class="btn btn-secondary" onclick="app.exportarDados('produtos')">
+                  <i class="fas fa-file-export"></i> Exportar
+                </button>
+                <button class="btn btn-primary" onclick="app.openModal('modal-produto')">
+                  <i class="fas fa-plus"></i> Novo Produto
+                </button>
+              </div>
+            </div>
+            <div class="table-card">
+              <div class="table-header">
+                <h3><i class="fas fa-boxes"></i> Lista de Produtos</h3>
+                <span class="badge-count" id="prod-count">0 produtos</span>
+              </div>
+              <div class="table-responsive">
+                <table class="data-table" id="produtos-table">
+                  <thead>
+                    <tr>
+                      <th>Codigo</th>
+                      <th>Nome</th>
+                      <th>Categoria</th>
+                      <th>Preco Compra</th>
+                      <th>Preco Venda</th>
+                      <th>Margem</th>
+                      <th>Qtd</th>
+                      <th>Unidade</th>
+                      <th>Status</th>
+                      <th>Accoes</th>
+                    </tr>
+                  </thead>
+                  <tbody id="produtos-body">
+                    <tr><td colspan="10" class="text-center">Carregando produtos...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- CATEGORIAS PAGE -->
+          <div id="page-categorias" class="page">
+            <div class="page-actions">
+              <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="cat-search" placeholder="Pesquisar categorias..." oninput="app.filtrarCategorias()">
+              </div>
+              <button class="btn btn-primary" onclick="app.openModal('modal-categoria')">
+                <i class="fas fa-plus"></i> Nova Categoria
+              </button>
+            </div>
+            <div class="cards-grid" id="categorias-grid">
+              <div class="loading-text">Carregando categorias...</div>
+            </div>
+          </div>
+
+          <!-- ESTOQUE PAGE -->
+          <div id="page-estoque" class="page">
+            <div class="page-actions">
+              <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="est-search" placeholder="Pesquisar estoque..." oninput="app.filtrarEstoque()">
+              </div>
+              <div class="action-buttons">
+                <button class="btn btn-success" onclick="app.openModal('modal-add-stock')">
+                  <i class="fas fa-plus-circle"></i> Adicionar Stock
+                </button>
+                <button class="btn btn-secondary" onclick="app.exportarDados('estoque')">
+                  <i class="fas fa-file-export"></i> Exportar
+                </button>
+              </div>
+            </div>
+            <div class="dashboard-stats" style="margin-bottom:20px;">
+              <div class="stat-card small">
+                <div class="stat-icon bg-blue"><i class="fas fa-boxes"></i></div>
+                <div class="stat-info">
+                  <span class="stat-label">Total em Estoque</span>
+                  <span class="stat-value" id="est-total-itens">0</span>
+                </div>
+              </div>
+              <div class="stat-card small">
+                <div class="stat-icon bg-gold"><i class="fas fa-coins"></i></div>
+                <div class="stat-info">
+                  <span class="stat-label">Valor Total</span>
+                  <span class="stat-value" id="est-valor-total">MT 0,00</span>
+                </div>
+              </div>
+              <div class="stat-card small">
+                <div class="stat-icon bg-orange"><i class="fas fa-exclamation-triangle"></i></div>
+                <div class="stat-info">
+                  <span class="stat-label">Itens Baixos</span>
+                  <span class="stat-value" id="est-itens-baixos">0</span>
+                </div>
+              </div>
+            </div>
+            <div class="table-card">
+              <div class="table-header">
+                <h3><i class="fas fa-warehouse"></i> Controle de Estoque</h3>
+              </div>
+              <div class="table-responsive">
+                <table class="data-table" id="estoque-table">
+                  <thead>
+                    <tr>
+                      <th>Produto</th>
+                      <th>Codigo</th>
+                      <th>Armazem</th>
+                      <th>Loja</th>
+                      <th>Total</th>
+                      <th>Minimo</th>
+                      <th>Custo Medio</th>
+                      <th>Status</th>
+                      <th>Accoes</th>
+                    </tr>
+                  </thead>
+                  <tbody id="estoque-body">
+                    <tr><td colspan="9" class="text-center">Carregando...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- LOJA PAGE -->
+          <div id="page-loja" class="page">
+            <div class="page-actions">
+              <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="loja-search" placeholder="Pesquisar produtos na loja..." oninput="app.filtrarLoja()">
+              </div>
+              <button class="btn btn-primary" onclick="app.openModal('modal-venda')">
+                <i class="fas fa-cash-register"></i> Nova Venda
+              </button>
+            </div>
+            <div class="table-card">
+              <div class="table-header">
+                <h3><i class="fas fa-store-alt"></i> Produtos na Loja</h3>
+                <span class="badge-count" id="loja-count">0 produtos</span>
+              </div>
+              <div class="table-responsive">
+                <table class="data-table" id="loja-table">
+                  <thead>
+                    <tr>
+                      <th>Codigo</th>
+                      <th>Nome</th>
+                      <th>Categoria</th>
+                      <th>Preco Venda</th>
+                      <th>Disponivel</th>
+                      <th>Vendidos</th>
+                      <th>Accoes</th>
+                    </tr>
+                  </thead>
+                  <tbody id="loja-body">
+                    <tr><td colspan="7" class="text-center">Carregando...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- ARMAZEM PAGE -->
+          <div id="page-armazem" class="page">
+            <div class="page-actions">
+              <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="arm-search" placeholder="Pesquisar armazem..." oninput="app.filtrarArmazem()">
+              </div>
+              <button class="btn btn-success" onclick="app.openModal('modal-add-stock')">
+                <i class="fas fa-plus-circle"></i> Adicionar Stock
+              </button>
+            </div>
+            <div class="table-card">
+              <div class="table-header">
+                <h3><i class="fas fa-dolly"></i> Armazem Central</h3>
+                <span class="badge-count" id="armazem-count">0 produtos</span>
+              </div>
+              <div class="table-responsive">
+                <table class="data-table" id="armazem-table">
+                  <thead>
+                    <tr>
+                      <th>Codigo</th>
+                      <th>Nome</th>
+                      <th>Categoria</th>
+                      <th>Quantidade</th>
+                      <th>Unidade</th>
+                      <th>Ultima Entrada</th>
+                      <th>Accoes</th>
+                    </tr>
+                  </thead>
+                  <tbody id="armazem-body">
+                    <tr><td colspan="7" class="text-center">Carregando...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- TRANSFERENCIAS PAGE -->
+          <div id="page-transferencias" class="page">
+            <div class="page-actions">
+              <button class="btn btn-primary" onclick="app.openModal('modal-transferencia')">
+                <i class="fas fa-exchange-alt"></i> Nova Transferencia
+              </button>
+            </div>
+            <div class="table-card">
+              <div class="table-header">
+                <h3><i class="fas fa-exchange-alt"></i> Historico de Transferencias</h3>
+              </div>
+              <div class="table-responsive">
+                <table class="data-table" id="transferencias-table">
+                  <thead>
+                    <tr>
+                      <th>Data</th>
+                      <th>Produto</th>
+                      <th>De</th>
+                      <th>Para</th>
+                      <th>Quantidade</th>
+                      <th>Utilizador</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="transferencias-body">
+                    <tr><td colspan="7" class="text-center">Nenhuma transferencia</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- VENDAS PAGE -->
+          <div id="page-vendas" class="page">
+            <div class="page-actions">
+              <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="venda-search" placeholder="Pesquisar vendas..." oninput="app.filtrarVendas()">
+              </div>
+              <div class="action-buttons">
+                <button class="btn btn-success" onclick="app.openModal('modal-venda')">
+                  <i class="fas fa-plus"></i> Lançar Venda
+                </button>
+                <button class="btn btn-secondary" onclick="app.exportarDados('vendas')">
+                  <i class="fas fa-file-export"></i> Exportar
+                </button>
+              </div>
+            </div>
+            <div class="dashboard-stats" style="margin-bottom:20px;">
+              <div class="stat-card small">
+                <div class="stat-icon bg-blue"><i class="fas fa-shopping-cart"></i></div>
+                <div class="stat-info">
+                  <span class="stat-label">Vendas Hoje</span>
+                  <span class="stat-value" id="vendas-hoje">MT 0,00</span>
+                </div>
+              </div>
+              <div class="stat-card small">
+                <div class="stat-icon bg-green"><i class="fas fa-chart-line"></i></div>
+                <div class="stat-info">
+                  <span class="stat-label">Lucro Hoje</span>
+                  <span class="stat-value" id="vendas-lucro">MT 0,00</span>
+                </div>
+              </div>
+              <div class="stat-card small">
+                <div class="stat-icon bg-gold"><i class="fas fa-receipt"></i></div>
+                <div class="stat-info">
+                  <span class="stat-label">Transacoes</span>
+                  <span class="stat-value" id="vendas-qtd">0</span>
+                </div>
+              </div>
+            </div>
+            <div class="table-card">
+              <div class="table-header">
+                <h3><i class="fas fa-receipt"></i> Registro de Vendas</h3>
+              </div>
+              <div class="table-responsive">
+                <table class="data-table" id="vendas-table">
+                  <thead>
+                    <tr>
+                      <th>Data</th>
+                      <th>Produto</th>
+                      <th>Qtd</th>
+                      <th>Preco Unit</th>
+                      <th>Desconto</th>
+                      <th>Subtotal</th>
+                      <th>Lucro</th>
+                      <th>Utilizador</th>
+                      <th>Accoes</th>
+                    </tr>
+                  </thead>
+                  <tbody id="vendas-body">
+                    <tr><td colspan="9" class="text-center">Nenhuma venda registada</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- INVENTARIO PAGE -->
+          <div id="page-inventario" class="page">
+            <div class="page-actions">
+              <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="inv-search" placeholder="Pesquisar inventario..." oninput="app.filtrarInventario()">
+              </div>
+              <div class="action-buttons">
+                <button class="btn btn-success" onclick="app.openModal('modal-inventario-fisico')">
+                  <i class="fas fa-clipboard-check"></i> Inventario Fisico
+                </button>
+                <button class="btn btn-secondary" onclick="app.exportarDados('inventario')">
+                  <i class="fas fa-file-export"></i> Exportar Inventario
+                </button>
+              </div>
+            </div>
+            <div class="dashboard-stats" style="margin-bottom:20px;">
+              <div class="stat-card small">
+                <div class="stat-icon bg-blue"><i class="fas fa-boxes"></i></div>
+                <div class="stat-info">
+                  <span class="stat-label">Total Itens</span>
+                  <span class="stat-value" id="inv-total">0</span>
+                </div>
+              </div>
+              <div class="stat-card small">
+                <div class="stat-icon bg-gold"><i class="fas fa-coins"></i></div>
+                <div class="stat-info">
+                  <span class="stat-label">Valor Total</span>
+                  <span class="stat-value" id="inv-valor">MT 0,00</span>
+                </div>
+              </div>
+              <div class="stat-card small">
+                <div class="stat-icon bg-green"><i class="fas fa-chart-line"></i></div>
+                <div class="stat-info">
+                  <span class="stat-label">Custo Medio</span>
+                  <span class="stat-value" id="inv-custo">MT 0,00</span>
+                </div>
+              </div>
+            </div>
+            <div class="table-card">
+              <div class="table-header">
+                <h3><i class="fas fa-clipboard-list"></i> Inventario em Tempo Real</h3>
+              </div>
+              <div class="table-responsive">
+                <table class="data-table" id="inventario-table">
+                  <thead>
+                    <tr>
+                      <th>Produto</th>
+                      <th>Codigo</th>
+                      <th>Qtd Atual</th>
+                      <th>Valor Stock</th>
+                      <th>Custo Medio</th>
+                      <th>Vendidos</th>
+                      <th>Perdas</th>
+                      <th>Roubos</th>
+                      <th>Saldo Min</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="inventario-body">
+                    <tr><td colspan="10" class="text-center">Carregando inventario...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- RECONCILIACAO PAGE -->
+          <div id="page-reconciliacao" class="page">
+            <div class="page-actions">
+              <button class="btn btn-primary btn-lg" onclick="app.openModal('modal-reconciliacao')">
+                <i class="fas fa-balance-scale"></i> Reconciliar Sistema
+              </button>
+            </div>
+            <div class="reconciliacao-cards">
+              <div class="rec-card">
+                <div class="rec-header"><i class="fas fa-store-alt"></i> Loja</div>
+                <div class="rec-body">
+                  <div class="rec-item"><span>Vendas Registadas</span><span id="rec-loja-vendas">MT 0,00</span></div>
+                  <div class="rec-item"><span>Stock Atual</span><span id="rec-loja-stock">0</span></div>
+                  <div class="rec-item"><span>Diferenca</span><span id="rec-loja-diff" class="diff">MT 0,00</span></div>
+                </div>
+              </div>
+              <div class="rec-card">
+                <div class="rec-header"><i class="fas fa-warehouse"></i> Armazem</div>
+                <div class="rec-body">
+                  <div class="rec-item"><span>Entradas</span><span id="rec-arm-entradas">MT 0,00</span></div>
+                  <div class="rec-item"><span>Saidas</span><span id="rec-arm-saidas">MT 0,00</span></div>
+                  <div class="rec-item"><span>Saldo</span><span id="rec-arm-saldo">MT 0,00</span></div>
+                </div>
+              </div>
+              <div class="rec-card">
+                <div class="rec-header"><i class="fas fa-exclamation-triangle"></i> Perdas</div>
+                <div class="rec-body">
+                  <div class="rec-item"><span>Total Perdas</span><span id="rec-perdas-total">MT 0,00</span></div>
+                  <div class="rec-item"><span>Itens Afetados</span><span id="rec-perdas-itens">0</span></div>
+                </div>
+              </div>
+              <div class="rec-card">
+                <div class="rec-header"><i class="fas fa-user-secret"></i> Roubos</div>
+                <div class="rec-body">
+                  <div class="rec-item"><span>Total Roubos</span><span id="rec-roubos-total">MT 0,00</span></div>
+                  <div class="rec-item"><span>Itens Afetados</span><span id="rec-roubos-itens">0</span></div>
+                </div>
+              </div>
+              <div class="rec-card highlight">
+                <div class="rec-header"><i class="fas fa-coins"></i> Caixa</div>
+                <div class="rec-body">
+                  <div class="rec-item"><span>Entradas</span><span id="rec-caixa-entradas">MT 0,00</span></div>
+                  <div class="rec-item"><span>Saidas</span><span id="rec-caixa-saidas">MT 0,00</span></div>
+                  <div class="rec-item"><span>Saldo Real</span><span id="rec-caixa-saldo">MT 0,00</span></div>
+                </div>
+              </div>
+              <div class="rec-card highlight">
+                <div class="rec-header"><i class="fas fa-chart-line"></i> Resumo</div>
+                <div class="rec-body">
+                  <div class="rec-item"><span>Lucro Real</span><span id="rec-resumo-lucro">MT 0,00</span></div>
+                  <div class="rec-item"><span>Diferencas</span><span id="rec-resumo-diff">MT 0,00</span></div>
+                  <div class="rec-item total"><span>SALDO FINAL</span><span id="rec-resumo-final">MT 0,00</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="table-card" style="margin-top:20px;">
+              <div class="table-header">
+                <h3><i class="fas fa-history"></i> Historico de Reconciliacoes</h3>
+              </div>
+              <div class="table-responsive">
+                <table class="data-table" id="reconciliacoes-table">
+                  <thead>
+                    <tr>
+                      <th>Data</th>
+                      <th>Loja</th>
+                      <th>Armazem</th>
+                      <th>Perdas</th>
+                      <th>Roubos</th>
+                      <th>Caixa</th>
+                      <th>Diferenca</th>
+                      <th>Utilizador</th>
+                    </tr>
+                  </thead>
+                  <tbody id="reconciliacoes-body">
+                    <tr><td colspan="8" class="text-center">Nenhuma reconciliacao</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- FECHAMENTO PAGE -->
+          <div id="page-fechamento" class="page">
+            <div class="page-actions center">
+              <button class="btn btn-primary btn-xl" onclick="app.openModal('modal-fechar-dia')">
+                <i class="fas fa-calendar-check"></i> Fechar Dia
+              </button>
+              <button class="btn btn-success btn-xl" onclick="app.iniciarNovoDia()">
+                <i class="fas fa-sun"></i> Iniciar Novo Dia
+              </button>
+            </div>
+            <div class="fechamento-status" id="fechamento-status">
+              <div class="status-card" id="status-hoje">
+                <div class="status-icon"><i class="fas fa-circle" style="color:var(--success)"></i></div>
+                <div class="status-text">
+                  <strong>Hoje</strong>
+                  <span id="status-data">--</span>
+                </div>
+              </div>
+            </div>
+            <div class="table-card" style="margin-top:20px;">
+              <div class="table-header">
+                <h3><i class="fas fa-history"></i> Historico de Fechamentos</h3>
+              </div>
+              <div class="table-responsive">
+                <table class="data-table" id="fechamentos-table">
+                  <thead>
+                    <tr>
+                      <th>Data</th>
+                      <th>Vendas</th>
+                      <th>Caixa</th>
+                      <th>Combustivel</th>
+                      <th>Perdas</th>
+                      <th>Roubos</th>
+                      <th>Lucro</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="fechamentos-body">
+                    <tr><td colspan="8" class="text-center">Nenhum fechamento</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- COMBUSTIVEL PAGE -->
+          <div id="page-combustivel" class="page">
+            <div class="page-actions">
+              <button class="btn btn-primary" onclick="app.openModal('modal-combustivel')">
+                <i class="fas fa-plus"></i> Registrar Abastecimento
+              </button>
+            </div>
+            <div class="dashboard-stats" style="margin-bottom:20px;">
+              <div class="stat-card small">
+                <div class="stat-icon bg-green"><i class="fas fa-gas-pump"></i></div>
+                <div class="stat-info">
+                  <span class="stat-label">Entradas Hoje</span>
+                  <span class="stat-value" id="comb-entradas">MT 0,00</span>
+                </div>
+              </div>
+              <div class="stat-card small">
+                <div class="stat-icon bg-blue"><i class="fas fa-oil-can"></i></div>
+                <div class="stat-info">
+                  <span class="stat-label">Consumo</span>
+                  <span class="stat-value" id="comb-consumo">MT 0,00</span>
+                </div>
+              </div>
+              <div class="stat-card small">
+                <div class="stat-icon bg-orange"><i class="fas fa-exclamation-triangle"></i></div>
+                <div class="stat-info">
+                  <span class="stat-label">Saldo</span>
+                  <span class="stat-value" id="comb-saldo">MT 0,00</span>
+                </div>
+              </div>
+            </div>
+            <div class="table-card">
+              <div class="table-header">
+                <h3><i class="fas fa-gas-pump"></i> Controle de Combustivel</h3>
+              </div>
+              <div class="table-responsive">
+                <table class="data-table" id="combustivel-table">
+                  <thead>
+                    <tr>
+                      <th>Data</th>
+                      <th>Tipo</th>
+                      <th>Bomba</th>
+                      <th>Litros</th>
+                      <th>Custo/L</th>
+                      <th>Total</th>
+                      <th>Perda</th>
+                      <th>Utilizador</th>
+                    </tr>
+                  </thead>
+                  <tbody id="combustivel-body">
+                    <tr><td colspan="8" class="text-center">Nenhum registro</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- BOMBAS PAGE -->
+          <div id="page-bombas" class="page">
+            <div class="page-actions">
+              <button class="btn btn-primary" onclick="app.openModal('modal-bomba')">
+                <i class="fas fa-plus"></i> Nova Bomba
+              </button>
+            </div>
+            <div class="cards-grid" id="bombas-grid">
+              <div class="loading-text">Carregando bombas...</div>
+            </div>
+          </div>
+
+          <!-- CAIXA PAGE -->
+          <div id="page-caixa" class="page">
+            <div class="page-actions">
+              <button class="btn btn-primary" onclick="app.openModal('modal-caixa')">
+                <i class="fas fa-plus"></i> Lancar Movimento
+              </button>
+            </div>
+            <div class="dashboard-stats" style="margin-bottom:20px;">
+              <div class="stat-card small">
+                <div class="stat-icon bg-green"><i class="fas fa-arrow-down"></i></div>
+                <div class="stat-info">
+                  <span class="stat-label">Entradas</span>
+                  <span class="stat-value" id="caixa-entradas">MT 0,00</span>
+                </div>
+              </div>
+              <div class="stat-card small">
+                <div class="stat-icon bg-red"><i class="fas fa-arrow-up"></i></div>
+                <div class="stat-info">
+                  <span class="stat-label">Saidas</span>
+                  <span class="stat-value" id="caixa-saidas">MT 0,00</span>
+                </div>
+              </div>
+              <div class="stat-card small">
+                <div class="stat-icon bg-gold"><i class="fas fa-coins"></i></div>
+                <div class="stat-info">
+                  <span class="stat-label">Saldo</span>
+                  <span class="stat-value" id="caixa-saldo">MT 0,00</span>
+                </div>
+              </div>
+            </div>
+            <div class="table-card">
+              <div class="table-header">
+                <h3><i class="fas fa-coins"></i> Fluxo de Caixa</h3>
+              </div>
+              <div class="table-responsive">
+                <table class="data-table" id="caixa-table">
+                  <thead>
+                    <tr>
+                      <th>Data</th>
+                      <th>Tipo</th>
+                      <th>Descricao</th>
+                      <th>Valor</th>
+                      <th>Saldo</th>
+                      <th>Utilizador</th>
+                    </tr>
+                  </thead>
+                  <tbody id="caixa-body">
+                    <tr><td colspan="6" class="text-center">Nenhum movimento</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- PERDAS PAGE -->
+          <div id="page-perdas" class="page">
+            <div class="page-actions">
+              <button class="btn btn-warning" onclick="app.openModal('modal-perda')">
+                <i class="fas fa-exclamation-triangle"></i> Registrar Perda
+              </button>
+            </div>
+            <div class="table-card">
+              <div class="table-header">
+                <h3><i class="fas fa-exclamation-triangle"></i> Registro de Perdas</h3>
+              </div>
+              <div class="table-responsive">
+                <table class="data-table" id="perdas-table">
+                  <thead>
+                    <tr>
+                      <th>Data</th>
+                      <th>Produto</th>
+                      <th>Quantidade</th>
+                      <th>Valor</th>
+                      <th>Motivo</th>
+                      <th>Local</th>
+                      <th>Utilizador</th>
+                    </tr>
+                  </thead>
+                  <tbody id="perdas-body">
+                    <tr><td colspan="7" class="text-center">Nenhuma perda registada</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- ROUBOS PAGE -->
+          <div id="page-roubos" class="page">
+            <div class="page-actions">
+              <button class="btn btn-danger" onclick="app.openModal('modal-roubo')">
+                <i class="fas fa-user-secret"></i> Registrar Roubo
+              </button>
+            </div>
+            <div class="table-card">
+              <div class="table-header">
+                <h3><i class="fas fa-user-secret"></i> Registro de Roubos</h3>
+              </div>
+              <div class="table-responsive">
+                <table class="data-table" id="roubos-table">
+                  <thead>
+                    <tr>
+                      <th>Data</th>
+                      <th>Produto</th>
+                      <th>Quantidade</th>
+                      <th>Valor</th>
+                      <th>Descricao</th>
+                      <th>Local</th>
+                      <th>Utilizador</th>
+                    </tr>
+                  </thead>
+                  <tbody id="roubos-body">
+                    <tr><td colspan="7" class="text-center">Nenhum roubo registado</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- RELATORIOS PAGE -->
+          <div id="page-relatorios" class="page">
+            <div class="relatorios-grid">
+              <div class="rel-card" onclick="app.gerarRelatorio('vendas')">
+                <div class="rel-icon bg-blue"><i class="fas fa-cash-register"></i></div>
+                <h3>Relatorio de Vendas</h3>
+                <p>Vendas, lucros e transacoes</p>
+                <button class="btn btn-primary btn-sm">Gerar</button>
+              </div>
+              <div class="rel-card" onclick="app.gerarRelatorio('estoque')">
+                <div class="rel-icon bg-gold"><i class="fas fa-warehouse"></i></div>
+                <h3>Relatorio de Estoque</h3>
+                <p>Stock atual e movimentacoes</p>
+                <button class="btn btn-primary btn-sm">Gerar</button>
+              </div>
+              <div class="rel-card" onclick="app.gerarRelatorio('inventario')">
+                <div class="rel-icon bg-green"><i class="fas fa-clipboard-list"></i></div>
+                <h3>Relatorio de Inventario</h3>
+                <p>Inventario completo e diferencas</p>
+                <button class="btn btn-primary btn-sm">Gerar</button>
+              </div>
+              <div class="rel-card" onclick="app.gerarRelatorio('perdas')">
+                <div class="rel-icon bg-orange"><i class="fas fa-exclamation-triangle"></i></div>
+                <h3>Relatorio de Perdas</h3>
+                <p>Perdas e desperdicios</p>
+                <button class="btn btn-primary btn-sm">Gerar</button>
+              </div>
+              <div class="rel-card" onclick="app.gerarRelatorio('roubos')">
+                <div class="rel-icon bg-red"><i class="fas fa-user-secret"></i></div>
+                <h3>Relatorio de Roubos</h3>
+                <p>Roubos e furtos</p>
+                <button class="btn btn-primary btn-sm">Gerar</button>
+              </div>
+              <div class="rel-card" onclick="app.gerarRelatorio('combustivel')">
+                <div class="rel-icon bg-teal"><i class="fas fa-gas-pump"></i></div>
+                <h3>Relatorio de Combustivel</h3>
+                <p>Abastecimentos e consumo</p>
+                <button class="btn btn-primary btn-sm">Gerar</button>
+              </div>
+              <div class="rel-card" onclick="app.gerarRelatorio('caixa')">
+                <div class="rel-icon bg-purple"><i class="fas fa-coins"></i></div>
+                <h3>Relatorio de Caixa</h3>
+                <p>Fluxo de caixa completo</p>
+                <button class="btn btn-primary btn-sm">Gerar</button>
+              </div>
+              <div class="rel-card" onclick="app.gerarRelatorio('lucro')">
+                <div class="rel-icon bg-indigo"><i class="fas fa-chart-line"></i></div>
+                <h3>Relatorio de Lucro</h3>
+                <p>Lucros e margens</p>
+                <button class="btn btn-primary btn-sm">Gerar</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- IMPORTACAO PAGE -->
+          <div id="page-importacao" class="page">
+            <div class="import-container">
+              <div class="upload-area" id="upload-area" ondrop="app.handleDrop(event)" ondragover="app.handleDragOver(event)" onclick="document.getElementById('import-file').click()">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <h3>Arraste arquivos aqui ou clique para selecionar</h3>
+                <p>Suporta: XLSX, XLS, CSV, JSON, XML, TXT, ODS, TSV</p>
+                <input type="file" id="import-file" accept=".xlsx,.xls,.csv,.json,.xml,.txt,.ods,.tsv" style="display:none;" onchange="app.handleFileSelect(event)">
+              </div>
+              <div class="import-preview" id="import-preview" style="display:none;">
+                <div class="table-header">
+                  <h3><i class="fas fa-eye"></i> Pre-visualizacao</h3>
+                  <span id="import-info"></span>
+                </div>
+                <div class="table-responsive" id="import-table-container">
+                </div>
+                <div class="import-actions">
+                  <button class="btn btn-secondary" onclick="app.cancelarImportacao()">Cancelar</button>
+                  <button class="btn btn-primary" onclick="app.confirmarImportacao()">
+                    <i class="fas fa-check"></i> Confirmar Importacao
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CONFIGURACOES PAGE -->
+          <div id="page-configuracoes" class="page">
+            <div class="config-grid">
+              <div class="config-card">
+                <h3><i class="fas fa-database"></i> Supabase</h3>
+                <div class="form-group">
+                  <label>URL</label>
+                  <input type="text" id="config-url" placeholder="https://...">
+                </div>
+                <div class="form-group">
+                  <label>Anon Key</label>
+                  <input type="password" id="config-key" placeholder="sua-chave">
+                </div>
+                <button class="btn btn-primary" onclick="app.salvarConfigSupabase()">Salvar e Conectar</button>
+              </div>
+              <div class="config-card">
+                <h3><i class="fas fa-bell"></i> Alertas</h3>
+                <div class="form-group">
+                  <label>Estoque Minimo (alerta)</label>
+                  <input type="number" id="config-estoque-min" value="10">
+                </div>
+                <div class="form-group">
+                  <label>Combustivel Minimo (litros)</label>
+                  <input type="number" id="config-comb-min" value="100">
+                </div>
+                <button class="btn btn-primary" onclick="app.salvarConfigAlertas()">Salvar Alertas</button>
+              </div>
+              <div class="config-card">
+                <h3><i class="fas fa-moon"></i> Aparência</h3>
+                <div class="form-group">
+                  <label>Tema</label>
+                  <select id="config-tema">
+                    <option value="dark">Escuro</option>
+                    <option value="light">Claro</option>
+                  </select>
+                </div>
+                <button class="btn btn-primary" onclick="app.salvarConfigTema()">Aplicar</button>
+              </div>
+              <div class="config-card danger">
+                <h3><i class="fas fa-trash"></i> Zona de Perigo</h3>
+                <button class="btn btn-danger" onclick="app.limparTodosDados()">
+                  <i class="fas fa-trash-alt"></i> Limpar Todos os Dados
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- GESTOR JUNIOR / CAIXA DASHBOARD -->
+          <div id="page-junior" class="page">
+            <div class="junior-dashboard">
+              <h2><i class="fas fa-user-tie"></i> Painel Operacional</h2>
+              <div class="junior-cards">
+                <div class="junior-card" onclick="app.navigate('loja')">
+                  <i class="fas fa-store-alt"></i>
+                  <h3>Visualizar Loja</h3>
+                </div>
+                <div class="junior-card" onclick="app.navigate('armazem')">
+                  <i class="fas fa-warehouse"></i>
+                  <h3>Visualizar Armazem</h3>
+                </div>
+                <div class="junior-card" onclick="app.openModal('modal-reconciliacao-junior')">
+                  <i class="fas fa-balance-scale"></i>
+                  <h3>Reconciliacao</h3>
+                </div>
+                <div class="junior-card" onclick="app.openModal('modal-venda')">
+                  <i class="fas fa-cash-register"></i>
+                  <h3>Registrar Venda</h3>
+                </div>
+                <div class="junior-card" onclick="app.openModal('modal-perda')">
+                  <i class="fas fa-exclamation-triangle"></i>
+                  <h3>Registrar Perda</h3>
+                </div>
+                <div class="junior-card" onclick="app.openModal('modal-roubo')">
+                  <i class="fas fa-user-secret"></i>
+                  <h3>Registrar Roubo</h3>
+                </div>
+                <div class="junior-card" onclick="app.navigate('estoque')">
+                  <i class="fas fa-boxes"></i>
+                  <h3>Consultar Estoque</h3>
+                </div>
+                <div class="junior-card" onclick="app.navigate('inventario')">
+                  <i class="fas fa-clipboard-list"></i>
+                  <h3>Consultar Inventario</h3>
+                </div>
+                <div class="junior-card" onclick="app.navigate('importacao')">
+                  <i class="fas fa-file-import"></i>
+                  <h3>Importar Vendas</h3>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </main>
+      </div>
+    </div>
+
+    <!-- MODALS -->
+    <div class="modal-overlay" id="modal-overlay" onclick="app.closeAllModals()"></div>
+
+    <!-- MODAL PRODUTO -->
+    <div class="modal" id="modal-produto">
+      <div class="modal-header">
+        <h3><i class="fas fa-box"></i> <span id="prod-modal-title">Novo Produto</span></h3>
+        <button class="modal-close" onclick="app.closeAllModals()"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nome do Produto *</label>
+            <input type="text" id="prod-nome" placeholder="Ex: Arroz Tio Joao" onblur="app.gerarCodigoInteligente()">
+          </div>
+          <div class="form-group">
+            <label>Codigo *</label>
+            <input type="text" id="prod-codigo" placeholder="Ex: ARR-TJO-25-001" readonly>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Categoria *</label>
+            <select id="prod-categoria"></select>
+          </div>
+          <div class="form-group">
+            <label>Unidade *</label>
+            <select id="prod-unidade">
+              <option value="un">Unidade</option>
+              <option value="kg">Quilograma</option>
+              <option value="g">Grama</option>
+              <option value="l">Litro</option>
+              <option value="ml">Mililitro</option>
+              <option value="cx">Caixa</option>
+              <option value="dz">Duzia</option>
+              <option value="pac">Pacote</option>
+              <option value="sac">Saco</option>
+              <option value="fd">Fardo</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Preco de Compra *</label>
+            <input type="number" id="prod-preco-compra" placeholder="0,00" step="0.01" onchange="app.calcularMargem()">
+          </div>
+          <div class="form-group">
+            <label>Preco de Venda *</label>
+            <input type="number" id="prod-preco-venda" placeholder="0,00" step="0.01" onchange="app.calcularMargem()">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Margem de Lucro</label>
+            <input type="text" id="prod-margem" placeholder="0%" readonly>
+          </div>
+          <div class="form-group">
+            <label>Quantidade Inicial *</label>
+            <input type="number" id="prod-quantidade" placeholder="0" min="0">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Estoque Minimo (alerta)</label>
+          <input type="number" id="prod-estoque-min" placeholder="10" min="0">
+        </div>
+        <div class="form-group">
+          <label>Descricao</label>
+          <textarea id="prod-descricao" rows="3" placeholder="Descricao opcional..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Codigo de Barras</label>
+          <input type="text" id="prod-barcode" placeholder="000000000000">
+        </div>
+        <!-- Preview de confirmacao -->
+        <div class="confirm-preview" id="prod-preview" style="display:none;">
+          <h4><i class="fas fa-eye"></i> Pre-visualizacao</h4>
+          <div id="prod-preview-content"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="app.closeAllModals()">Cancelar</button>
+        <button class="btn btn-info" onclick="app.previewProduto()">Pre-visualizar</button>
+        <button class="btn btn-primary" onclick="app.confirmarSalvarProduto()" id="btn-salvar-produto">
+          <i class="fas fa-check"></i> Confirmar
+        </button>
+      </div>
+    </div>
+
+    <!-- MODAL CATEGORIA -->
+    <div class="modal" id="modal-categoria">
+      <div class="modal-header">
+        <h3><i class="fas fa-tag"></i> Nova Categoria</h3>
+        <button class="modal-close" onclick="app.closeAllModals()"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Nome *</label>
+          <input type="text" id="cat-nome" placeholder="Ex: Bebidas">
+        </div>
+        <div class="form-group">
+          <label>Descricao</label>
+          <textarea id="cat-descricao" rows="2" placeholder="Descricao opcional..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Cor (opcional)</label>
+          <input type="color" id="cat-cor" value="#D4AF37">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="app.closeAllModals()">Cancelar</button>
+        <button class="btn btn-primary" onclick="app.confirmarSalvarCategoria()">
+          <i class="fas fa-check"></i> Confirmar
+        </button>
+      </div>
+    </div>
+
+    <!-- MODAL ADD STOCK -->
+    <div class="modal" id="modal-add-stock">
+      <div class="modal-header">
+        <h3><i class="fas fa-plus-circle"></i> Adicionar Stock</h3>
+        <button class="modal-close" onclick="app.closeAllModals()"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Produto *</label>
+          <select id="stock-produto"></select>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Quantidade *</label>
+            <input type="number" id="stock-quantidade" placeholder="0" min="1">
+          </div>
+          <div class="form-group">
+            <label>Custo Unitario</label>
+            <input type="number" id="stock-custo" placeholder="0,00" step="0.01">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Destino</label>
+          <select id="stock-destino">
+            <option value="armazem">Armazem</option>
+            <option value="loja">Loja</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Observacao</label>
+          <textarea id="stock-obs" rows="2" placeholder="Observacao opcional..."></textarea>
+        </div>
+        <div class="confirm-preview" id="stock-preview" style="display:none;">
+          <h4><i class="fas fa-eye"></i> Pre-visualizacao</h4>
+          <div id="stock-preview-content"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="app.closeAllModals()">Cancelar</button>
+        <button class="btn btn-info" onclick="app.previewAddStock()">Pre-visualizar</button>
+        <button class="btn btn-primary" onclick="app.confirmarAddStock()">
+          <i class="fas fa-check"></i> Confirmar
+        </button>
+      </div>
+    </div>
+
+    <!-- MODAL VENDA -->
+    <div class="modal" id="modal-venda">
+      <div class="modal-header">
+        <h3><i class="fas fa-cash-register"></i> Lancar Venda</h3>
+        <button class="modal-close" onclick="app.closeAllModals()"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Produto *</label>
+          <select id="venda-produto" onchange="app.atualizarPrecoVenda()"></select>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Quantidade *</label>
+            <input type="number" id="venda-quantidade" placeholder="1" min="1" value="1" onchange="app.calcularTotalVenda()">
+          </div>
+          <div class="form-group">
+            <label>Preco Unitario</label>
+            <input type="number" id="venda-preco" placeholder="0,00" step="0.01" readonly>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Desconto (%)</label>
+            <input type="number" id="venda-desconto" placeholder="0" min="0" max="100" value="0" onchange="app.calcularTotalVenda()">
+          </div>
+          <div class="form-group">
+            <label>Total</label>
+            <input type="text" id="venda-total" placeholder="MT 0,00" readonly>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Observacao</label>
+          <textarea id="venda-obs" rows="2" placeholder="Observacao opcional..."></textarea>
+        </div>
+        <div class="confirm-preview" id="venda-preview" style="display:none;">
+          <h4><i class="fas fa-eye"></i> Pre-visualizacao</h4>
+          <div id="venda-preview-content"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="app.closeAllModals()">Cancelar</button>
+        <button class="btn btn-info" onclick="app.previewVenda()">Pre-visualizar</button>
+        <button class="btn btn-primary" onclick="app.confirmarVenda()">
+          <i class="fas fa-check"></i> Confirmar Venda
+        </button>
+      </div>
+    </div>
+
+    <!-- MODAL TRANSFERENCIA -->
+    <div class="modal" id="modal-transferencia">
+      <div class="modal-header">
+        <h3><i class="fas fa-exchange-alt"></i> Nova Transferencia</h3>
+        <button class="modal-close" onclick="app.closeAllModals()"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Produto *</label>
+          <select id="trans-produto"></select>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>De *</label>
+            <select id="trans-de">
+              <option value="armazem">Armazem</option>
+              <option value="loja">Loja</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Para *</label>
+            <select id="trans-para">
+              <option value="loja">Loja</option>
+              <option value="armazem">Armazem</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Quantidade *</label>
+          <input type="number" id="trans-quantidade" placeholder="0" min="1">
+        </div>
+        <div class="form-group">
+          <label>Observacao</label>
+          <textarea id="trans-obs" rows="2" placeholder="Observacao opcional..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="app.closeAllModals()">Cancelar</button>
+        <button class="btn btn-primary" onclick="app.confirmarTransferencia()">
+          <i class="fas fa-check"></i> Confirmar
+        </button>
+      </div>
+    </div>
+
+    <!-- MODAL PERDA -->
+    <div class="modal" id="modal-perda">
+      <div class="modal-header">
+        <h3><i class="fas fa-exclamation-triangle"></i> Registrar Perda</h3>
+        <button class="modal-close" onclick="app.closeAllModals()"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Produto *</label>
+          <select id="perda-produto"></select>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Quantidade *</label>
+            <input type="number" id="perda-quantidade" placeholder="0" min="1">
+          </div>
+          <div class="form-group">
+            <label>Local *</label>
+            <select id="perda-local">
+              <option value="loja">Loja</option>
+              <option value="armazem">Armazem</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Motivo *</label>
+          <textarea id="perda-motivo" rows="3" placeholder="Descreva o motivo da perda..."></textarea>
+        </div>
+        <div class="confirm-preview" id="perda-preview" style="display:none;">
+          <h4><i class="fas fa-eye"></i> Pre-visualizacao</h4>
+          <div id="perda-preview-content"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="app.closeAllModals()">Cancelar</button>
+        <button class="btn btn-info" onclick="app.previewPerda()">Pre-visualizar</button>
+        <button class="btn btn-warning" onclick="app.confirmarPerda()">
+          <i class="fas fa-check"></i> Confirmar Perda
+        </button>
+      </div>
+    </div>
+
+    <!-- MODAL ROUBO -->
+    <div class="modal" id="modal-roubo">
+      <div class="modal-header">
+        <h3><i class="fas fa-user-secret"></i> Registrar Roubo</h3>
+        <button class="modal-close" onclick="app.closeAllModals()"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Produto *</label>
+          <select id="roubo-produto"></select>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Quantidade *</label>
+            <input type="number" id="roubo-quantidade" placeholder="0" min="1">
+          </div>
+          <div class="form-group">
+            <label>Local *</label>
+            <select id="roubo-local">
+              <option value="loja">Loja</option>
+              <option value="armazem">Armazem</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Descricao *</label>
+          <textarea id="roubo-descricao" rows="3" placeholder="Descreva o roubo..."></textarea>
+        </div>
+        <div class="confirm-preview" id="roubo-preview" style="display:none;">
+          <h4><i class="fas fa-eye"></i> Pre-visualizacao</h4>
+          <div id="roubo-preview-content"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="app.closeAllModals()">Cancelar</button>
+        <button class="btn btn-info" onclick="app.previewRoubo()">Pre-visualizar</button>
+        <button class="btn btn-danger" onclick="app.confirmarRoubo()">
+          <i class="fas fa-check"></i> Confirmar Roubo
+        </button>
+      </div>
+    </div>
+
+    <!-- MODAL COMBUSTIVEL -->
+    <div class="modal" id="modal-combustivel">
+      <div class="modal-header">
+        <h3><i class="fas fa-gas-pump"></i> Registrar Abastecimento</h3>
+        <button class="modal-close" onclick="app.closeAllModals()"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Tipo *</label>
+            <select id="comb-tipo">
+              <option value="gasolina">Gasolina</option>
+              <option value="gasoleo">Gasoleo</option>
+              <option value="kerosene">Kerosene</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Bomba *</label>
+            <select id="comb-bomba"></select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Litros *</label>
+            <input type="number" id="comb-litros" placeholder="0" min="0.01" step="0.01">
+          </div>
+          <div class="form-group">
+            <label>Custo por Litro *</label>
+            <input type="number" id="comb-custo-litro" placeholder="0,00" step="0.01">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Observacao</label>
+          <textarea id="comb-obs" rows="2" placeholder="Observacao..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="app.closeAllModals()">Cancelar</button>
+        <button class="btn btn-primary" onclick="app.confirmarCombustivel()">
+          <i class="fas fa-check"></i> Confirmar
+        </button>
+      </div>
+    </div>
+
+    <!-- MODAL BOMBA -->
+    <div class="modal" id="modal-bomba">
+      <div class="modal-header">
+        <h3><i class="fas fa-oil-can"></i> Nova Bomba</h3>
+        <button class="modal-close" onclick="app.closeAllModals()"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Nome *</label>
+          <input type="text" id="bomba-nome" placeholder="Ex: Bomba 1">
+        </div>
+        <div class="form-group">
+          <label>Tipo de Combustivel</label>
+          <select id="bomba-tipo">
+            <option value="gasolina">Gasolina</option>
+            <option value="gasoleo">Gasoleo</option>
+            <option value="kerosene">Kerosene</option>
+            <option value="misto">Misto</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Capacidade (litros)</label>
+          <input type="number" id="bomba-capacidade" placeholder="0" min="0">
+        </div>
+        <div class="form-group">
+          <label>Localizacao</label>
+          <input type="text" id="bomba-local" placeholder="Ex: Ilha Norte">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="app.closeAllModals()">Cancelar</button>
+        <button class="btn btn-primary" onclick="app.confirmarBomba()">
+          <i class="fas fa-check"></i> Confirmar
+        </button>
+      </div>
+    </div>
+
+    <!-- MODAL CAIXA -->
+    <div class="modal" id="modal-caixa">
+      <div class="modal-header">
+        <h3><i class="fas fa-coins"></i> Lancar Movimento</h3>
+        <button class="modal-close" onclick="app.closeAllModals()"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Tipo *</label>
+            <select id="caixa-tipo">
+              <option value="entrada">Entrada</option>
+              <option value="saida">Saida</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Valor *</label>
+            <input type="number" id="caixa-valor" placeholder="0,00" step="0.01">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Descricao *</label>
+          <input type="text" id="caixa-descricao" placeholder="Descricao do movimento...">
+        </div>
+        <div class="form-group">
+          <label>Observacao</label>
+          <textarea id="caixa-obs" rows="2" placeholder="Observacao..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="app.closeAllModals()">Cancelar</button>
+        <button class="btn btn-primary" onclick="app.confirmarCaixa()">
+          <i class="fas fa-check"></i> Confirmar
+        </button>
+      </div>
+    </div>
+
+    <!-- MODAL INVENTARIO FISICO -->
+    <div class="modal modal-lg" id="modal-inventario-fisico">
+      <div class="modal-header">
+        <h3><i class="fas fa-clipboard-check"></i> Realizar Inventario Fisico</h3>
+        <button class="modal-close" onclick="app.closeAllModals()"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="inventario-fisico-list" id="inventario-fisico-list">
+          <p class="text-center">Carregando produtos...</p>
+        </div>
+        <div class="inventario-resultado" id="inventario-resultado" style="display:none;">
+          <h4><i class="fas fa-chart-bar"></i> Resultado do Inventario</h4>
+          <div id="inventario-diff-content"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="app.closeAllModals()">Cancelar</button>
+        <button class="btn btn-info" onclick="app.calcularDiferencasInventario()">Calcular Diferencas</button>
+        <button class="btn btn-primary" onclick="app.confirmarInventario()">
+          <i class="fas fa-check"></i> Confirmar Correcoes
+        </button>
+      </div>
+    </div>
+
+    <!-- MODAL RECONCILIACAO -->
+    <div class="modal" id="modal-reconciliacao">
+      <div class="modal-header">
+        <h3><i class="fas fa-balance-scale"></i> Reconciliar Sistema</h3>
+        <button class="modal-close" onclick="app.closeAllModals()"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="reconciliacao-resumo" id="reconciliacao-resumo">
+          <p class="text-center">Clique em "Analisar" para ver o resumo da reconciliacao.</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="app.closeAllModals()">Cancelar</button>
+        <button class="btn btn-info" onclick="app.analisarReconciliacao()">Analisar</button>
+        <button class="btn btn-primary" onclick="app.confirmarReconciliacao()">
+          <i class="fas fa-check"></i> Confirmar Reconciliacao
+        </button>
+      </div>
+    </div>
+
+    <!-- MODAL FECHAR DIA -->
+    <div class="modal" id="modal-fechar-dia">
+      <div class="modal-header">
+        <h3><i class="fas fa-calendar-check"></i> Fechar Dia</h3>
+        <button class="modal-close" onclick="app.closeAllModals()"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="fechamento-resumo" id="fechamento-resumo">
+          <p class="text-center">Clique em "Carregar Resumo" para ver os dados do dia.</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="app.closeAllModals()">Cancelar</button>
+        <button class="btn btn-info" onclick="app.carregarResumoDia()">Carregar Resumo</button>
+        <button class="btn btn-primary" onclick="app.confirmarFecharDia()">
+          <i class="fas fa-check"></i> Confirmar Fechamento
+        </button>
+      </div>
+    </div>
+
+    <!-- MODAL IMPORT PRODUTOS -->
+    <div class="modal" id="modal-import-produtos">
+      <div class="modal-header">
+        <h3><i class="fas fa-file-import"></i> Importar Produtos</h3>
+        <button class="modal-close" onclick="app.closeAllModals()"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="upload-area" onclick="document.getElementById('import-prod-file').click()">
+          <i class="fas fa-cloud-upload-alt"></i>
+          <h3>Clique para selecionar arquivo</h3>
+          <p>CSV, XLSX, JSON</p>
+          <input type="file" id="import-prod-file" accept=".csv,.xlsx,.json" style="display:none;" onchange="app.handleImportProdutos(event)">
+        </div>
+        <div id="import-prod-preview" style="display:none; margin-top:15px;">
+          <h4>Pre-visualizacao:</h4>
+          <div class="table-responsive" id="import-prod-table"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="app.closeAllModals()">Cancelar</button>
+        <button class="btn btn-primary" id="btn-confirm-import-prod" style="display:none;" onclick="app.confirmarImportProdutos()">
+          <i class="fas fa-check"></i> Confirmar Importacao
+        </button>
+      </div>
+    </div>
+
+    <!-- TOAST CONTAINER -->
+    <div class="toast-container" id="toast-container"></div>
+  </div>
+
+  <script src="formulas.js"></script>
+  <script src="supabase.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
