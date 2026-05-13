@@ -444,7 +444,40 @@ function detectarProdutoSimilar(nome, produtosExistentes) {
   
   return { similar: false, produto: null, score: 0 };
 }
+// ===== ESTOQUE REAL BASEADO EM MOVIMENTACOES =====
 
+function calcularEstoqueReal(produtoId, movimentacoes = []) {
+  let saldo = 0;
+
+  for (const mov of movimentacoes) {
+
+    if (mov.produto_id != produtoId) continue;
+
+    const qtd = parseFloat(mov.quantidade) || 0;
+
+    // ENTRADAS
+    if (
+      mov.tipo === 'entrada' ||
+      mov.tipo === 'devolucao' ||
+      mov.tipo === 'reposicao'
+    ) {
+      saldo += qtd;
+    }
+
+    // SAIDAS
+    if (
+      mov.tipo === 'saida' ||
+      mov.tipo === 'venda' ||
+      mov.tipo === 'perda' ||
+      mov.tipo === 'roubo' ||
+      mov.tipo === 'transferencia'
+    ) {
+      saldo -= qtd;
+    }
+  }
+
+  return saldo;
+}
 // ===== API GLOBAL =====
 window.Formulas = {
   formatMoney,
