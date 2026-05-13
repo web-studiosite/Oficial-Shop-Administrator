@@ -283,12 +283,15 @@ const app = {
     this.showToast('Dados carregados!', 'success');
   },
 
-  carregarDadosLocais() {
-    const tabelas = ['produtos', 'categorias', 'vendas', 'caixa', 'movimentacoes', 'transferencias', 'bombas', 'perdas', 'roubos', 'fechamentos'];
-    for (const t of tabelas) {
-      this.state.dados[t] = Formulas.loadLocal(t, []);
-    }
-  },
+  async carregarDadosLocais() {
+  const tabelas = ['produtos', 'categorias', 'vendas', 'caixa', 'movimentacoes', 'transferencias', 'bombas', 'perdas', 'roubos', 'fechamentos'];
+
+  for (const t of tabelas) {
+    const fn = `get${t.charAt(0).toUpperCase() + t.slice(1)}`;
+    const { data } = await SupabaseAPI[fn]();
+    this.state.dados[t] = data || [];
+  }
+},
 
   // ===== PRODUTOS =====
   gerarCodigoInteligente() {
