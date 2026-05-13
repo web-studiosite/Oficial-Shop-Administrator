@@ -117,24 +117,23 @@ async function insertTabela(nomeTabela, dados) {
   try {
     const client = getSupabase();
     if (!client) return { data: null, error: 'Cliente nao inicializado' };
-    
+
     const { data, error } = await client
       .from(nomeTabela)
       .insert(dados)
       .select();
-    
+
     if (error) {
       console.error(`ERRO INSERT ${nomeTabela}: ${error.message}`);
       return { data: null, error: error.message };
     }
-    
-    return { data: data?.[0] || null, error: null };
+
+    return { data, error: null };
   } catch (erro) {
     console.error(`ERRO INSERT ${nomeTabela}: ${erro.message}`);
     return { data: null, error: erro.message };
   }
 }
-
 // Funcao generica para atualizar dados
 async function updateTabela(nomeTabela, id, dados) {
   try {
