@@ -523,5 +523,6 @@ window.Formulas = {
   maxPor,
   minPor,
   calcularSimilaridade,
-  detectarProdutoSimilar
+  detectarProdutoSimilar,
+  calcularEstoqueReal,
 };
