@@ -32,13 +32,13 @@ const app = {
   },
 
   // ===== INICIALIZACAO =====
-  init() {
-    this.carregarDadosLocais();
-    this.setupEventListeners();
-    this.atualizarStatusSupabase();
-    this.iniciarMonitoramento();
-    console.log('[APP] Shop Administration ERP inicializado');
-  },
+  async init() {
+  await this.carregarDadosLocais(); // agora vindo do Supabase
+  this.setupEventListeners();
+  this.atualizarStatusSupabase();
+  this.iniciarMonitoramento();
+  console.log('[APP] Shop Administration ERP inicializado');
+},
 
   setupEventListeners() {
     // Fechar dropdown ao clicar fora
