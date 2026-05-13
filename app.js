@@ -462,10 +462,9 @@ const app = {
     const custoAnterior = parseFloat(prod.custo_medio) || parseFloat(prod.preco_compra) || 0;
     const novoCustoMedio = Formulas.calcularCustoMedio(qtdAnterior, custoAnterior, quantidade, custo);
 
-    prod.quantidade = qtdNova;
-    prod.quantidade_armazem = (parseFloat(prod.quantidade_armazem) || 0) + quantidade;
-    prod.custo_medio = novoCustoMedio;
-    prod.updated_at = new Date().toISOString();
+    // ESTOQUE PASSA A SER CONTROLADO PELAS MOVIMENTACOES
+// prod.quantidade = qtdNova;
+// prod.quantidade_armazem = (parseFloat(prod.quantidade_armazem) || 0) + quantidade;
 
     try {
       if (this.state.supabaseOnline) {
